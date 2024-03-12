@@ -1,0 +1,39 @@
+import pandas as pd
+
+df = pd.read_csv('https://raw.githubusercontent.com/selva86/datasets/master/Cars93_miss.csv')
+filtered_df = df.loc[::20, ['Manufacturer', 'Model', 'Type']]
+
+print("Filtered DataFrame for every 20th row:")
+print(filtered_df,"\n")
+
+df['Min.Price'].fillna(df['Min.Price'].mean(), inplace=True)
+df['Max.Price'].fillna(df['Max.Price'].mean(), inplace=True)
+
+print("Mean Min.Price:", df['Min.Price'].mean())
+print("Mean Max.Price:", df['Max.Price'].mean())
+
+import numpy as np
+import pandas as pd
+
+df = pd.DataFrame(np.random.randint(10, 40, size=(60)).reshape(-1, 4))
+rows_gt_100 = df[df.sum(axis=1) > 100]
+
+print("\nRows with sum greater than 100:")
+print(rows_gt_100)
+
+
+import numpy as np
+
+# Create a 4x4 array with random integers between 1 and 100
+array = np.random.randint(1, 100, size=(4, 4))
+
+# Function to calculate sum of rows and columns
+def calculate_sums(arr):
+    row_sums = np.sum(arr, axis=1)
+    column_sums = np.sum(arr, axis=0)
+    return row_sums, column_sums
+
+row_sums, column_sums = calculate_sums(array)
+
+print("\nRows with sum greater than 100:")
+print(rows_gt_100)
