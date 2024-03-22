@@ -1,0 +1,66 @@
+import pandas as pd
+
+file_path = 'https://data.cityofnewyork.us/api/views/6fi9-q3ta/rows.csv?accessType=DOWNLOAD'
+
+data = pd.read_csv(file_path)
+
+data.head()
+
+
+data['hour_beginning'] = pd.to_datetime(data['hour_beginning'])
+
+data['day_of_week'] = data['hour_beginning'].dt.day_name()
+weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+data_weekdays = data[data['day_of_week'].isin(weekdays)]
+
+weekly_counts = data_weekdays.groupby('day_of_week')['Pedestrians'].sum().reindex(weekdays)
+
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+weekly_counts.plot(kind='line', marker='o')
+plt.title('Total Pedestrian Counts by Day of the Week (Weekdays Only)')
+plt.xlabel('Day of the Week')
+plt.ylabel('Total Pedestrian Counts')
+plt.grid(True)
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+
+data_2019 = data[data['hour_beginning'].dt.year == 2019]
+weather_pedestrians = data_2019.groupby('weather_summary')['Pedestrians'].sum().reset_index()
+sorted_weather_pedestrians = weather_pedestrians.sort_values(by='Pedestrians', ascending=False)
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+plt.barh(sorted_weather_pedestrians['weather_summary'], sorted_weather_pedestrians['Pedestrians'])
+plt.xlabel('Total Pedestrian Counts')
+plt.ylabel('Weather Condition')
+plt.title('Pedestrian Counts by Weather Condition in 2019')
+plt.tight_layout()
+plt.show()
+
+
+def categorize_time_of_day(hour):
+    if 6 <= hour < 12:
+        return 'Morning'
+    elif 12 <= hour < 18:
+        return 'Afternoon'
+    elif 18 <= hour < 24:
+        return 'Evening'
+    else:
+        return 'Night'
+
+data['time_of_day'] = data['hour_beginning'].dt.hour.apply(categorize_time_of_day)
+
+time_of_day_activity = data.groupby('time_of_day')['Pedestrians'].sum()
+
+import matplotlib.pyplot as plt
+
+time_of_day_activity.plot(kind='bar')
+plt.title('Pedestrian Activity Patterns Throughout the Day')
+plt.xlabel('Time of Day')
+plt.ylabel('Total Pedestrian Counts')
+plt.xticks(rotation=45)
+plt.show()
